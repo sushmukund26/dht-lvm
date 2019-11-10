@@ -28,12 +28,12 @@ args = parser.parse_args()
 # log = logging.getLogger('kademlia')
 # log.addHandler(handler)
 # log.setLevel(logging.DEBUG)
-
+    
 # Get Async event loop
 loop = asyncio.get_event_loop()
 
 # Set logging to TRUE
-loop.set_debug(True)
+# loop.set_debug(True)
 
 # Create NODE in our DHT
 node = Server()
@@ -47,20 +47,22 @@ loop.run_until_complete(node.listen(args.host))
 loop.run_until_complete(node.bootstrap([(args.ip, args.port)]))
 
 # set a value for the key "my-key" on the network
-loop.run_until_complete(node.set("saim", ("127.0.0.1", args.host+1)))
+loop.run_until_complete(node.set(str(args.host), args.host+1))
 
 # get the value associated with "my-key" from the network
 #result = loop.run_until_complete(node.get("my-key"))
 #print(result)
 
 client_server = NodeServer("0.0.0.0", args.host+1)
+client = NodeClient("0.0.0.0", args.host+2, node)
 thread1 = threading.Thread(target=client_server.listen)
-thread1.start()
+thread2 = threading.Thread(target=client.get)
 
+thread1.start()
+thread2.start()
 
 try:
     loop.run_forever()
-    
 except KeyboardInterrupt:
     pass
 finally:

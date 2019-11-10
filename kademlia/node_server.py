@@ -1,4 +1,6 @@
 import socket
+import asyncio
+from kademlia.network import Server
 
 class NodeServer:
 
@@ -13,23 +15,29 @@ class NodeServer:
 
         self.mySocket.bind((self.ip, self.port))
         self.mySocket.listen(5)  
-        print('Started listening on: ', (self.ip, self.port))
+        print('Started listening on: ', (self.ip, self.port), '\n')
 
         while True:
 
             conn, addr = self.mySocket.accept()
-            print ('Client Connected: ', addr)
+            print ('Client Connected: ', addr, '\n')
 
 
 class NodeClient:
 
-    def __init__(self, ip, port, host):
+    def __init__(self, ip, port, node):
 
-        self.ip = name
+        self.ip = ip
+        self.host = tuple()
         self.port = port
-        self.host = host
+        self.node = node
         self.mySocket = socket.socket()
 
-    def connect(self):
+    def get(self):
 
-        self.connect(host)
+        loop = asyncio.new_event_loop()
+        while 1:
+            key = input("Enter the key you want to retrieve: \n")
+            result = loop.run_until_complete(self.node.get(key))
+            print(result, '\n')
+            self.mySocket.connect(("127.0.0.1", result))

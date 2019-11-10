@@ -1,4 +1,4 @@
-import logging
+# import logging
 import asyncio
 import sys
 
@@ -8,12 +8,12 @@ if len(sys.argv) != 4:
     print("Usage: python get.py <bootstrap node> <bootstrap port> <key>")
     sys.exit(1)
 
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-log = logging.getLogger('kademlia')
-log.addHandler(handler)
-log.setLevel(logging.DEBUG)
+# handler = logging.StreamHandler()
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# handler.setFormatter(formatter)
+# log = logging.getLogger('kademlia')
+# log.addHandler(handler)
+# log.setLevel(logging.DEBUG)
 
 loop = asyncio.get_event_loop()
 loop.set_debug(True)

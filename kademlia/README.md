@@ -5,7 +5,7 @@ This library is an asynchronous Python implementation of the [Kademlia distribut
 This library aims to be as close to a reference implementation of the [Kademlia paper](http://pdos.csail.mit.edu/~petar/papers/maymounkov-kademlia-lncs.pdf) as possible.
 
 
-All of the following must be run inside the kademlia folder
+All of the following must be executed inside the kademlia folder
 ## Installation
 
 make sure you have python3 and pip3 installed on your pc
@@ -18,7 +18,7 @@ pip3 install -r dev-requirements.txt
 
 ## Usage
 
-The following commands runs one node on the DHT
+The following commands creates one node in the DHT
 ```
 python3 dht_node.py <bootstrap-ip> <bootstrap-port> <own port>
 ```

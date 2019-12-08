@@ -68,7 +68,7 @@ client_server = NodeServer("0.0.0.0", args.host+1)
 client = NodeClient("0.0.0.0", args.host+2, node, 0)
 thread1 = threading.Thread(target=client_server.listen)
 thread2 = threading.Thread(target=client.get)
-print ('Node client running on ', ('0.0.0.0', args.port+2))
+print ('Node client running on ', ('0.0.0.0', args.host+2))
 
 thread1.start()
 thread2.start()

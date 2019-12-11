@@ -2,6 +2,7 @@ import os
 import socket
 import asyncio
 import threading
+import pickle
 from kademlia.network import Server
 
 class NodeServer:
@@ -59,9 +60,20 @@ class NodeClient:
 
             while 1:
 
-                key = input("Input 0 to exit \n Input 1 to see all files in a volume \n Input 2 to Rretrieve a file \n Input 3 to put a file")
+                print("Enter 0 to exit")
+                print("Enter 1 to list all files")
+                print("Enter 2 to get a file")
+                print("Enter 3 to put a file")
+                key = input("Enter: ")
+
                 mySocket.send(key.encode())
 
+                if key == '0':
+                    break
+
+                data = pickle.loads(mySocket.recv(512))
+
+                print(data)
 
 
             mySocket.close()
@@ -72,23 +84,23 @@ def onConnection(clientSocket, clientAddr):
     #do something on connection
 
     lv = clientSocket.recv(512)
-    print ('Entered Different thread')
-    print (os.getcwd() + "/"  +lv.decode())
+    userLv = os.getcwd() + "/" + lv.decode()
+    print (userLv)
 
     while 1:
 
         mode = clientSocket.recv(512).decode()
 
-        if mode == '1':
+        if mode == '0':
+            exit(0)
+        elif mode == '1':
+            #list all the contents of the logical volume
             print ("mode 1")
+            data=pickle.dumps(os.listdir(userLv))
+            clientSocket.send(data)
         elif mode == '2':
+            #access a file from the logical volume
             print ("mode 2")
         elif mode == '3':
+            #put a file in the logical volume
             print ("mode 3")
-
-        exit(0)
-
-        # print (os.listdir(os.getcwd()))
-
-                
-            

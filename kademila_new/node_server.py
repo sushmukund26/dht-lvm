@@ -100,7 +100,7 @@ def onConnection(clientSocket, clientAddr):
         elif mode == '1':
             #list all the contents of the logical volume
             print ("mode 1")
-            data=pickle.dumps(listAllFiles(userLv))
+            data=pickle.dumps(listAllFiles(userLv, lv.decode()))
             clientSocket.send(data)
         elif mode == '2':
             #access a file from the logical volume
@@ -177,13 +177,20 @@ def clientSend(socket, filePath):
     f.close()
     print ('Done Sending')
 
-def listAllFiles(path):
+def listAllFiles(path, lv):
 
     files = []
     # r=root, d=directories, f = files
     for r, d, f in os.walk(path):
         for file in f:
-            f = os.path.join(r, file)[43:]
+
+            toAdd = ""
+            for name in reversed(r.split("/")):
+                if name == lv:
+                    break
+                toAdd = "/" + name + toAdd
+
+            f = os.path.join(toAdd, file)
             files.append(f)
     
     return files

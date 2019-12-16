@@ -15,33 +15,28 @@ class NodeServer:
         self.clients = dict()
 
 
-
     def listen(self):
 
         self.mySocket.bind((self.ip, self.port))
-        self.mySocket.listen(5)  
+        self.mySocket.listen(20)  
         print('Node server is listening on: ', (self.ip, self.port), '\n')
 
         while True:
 
             conn, addr = self.mySocket.accept()
+            self.clients[addr] = conn
             print ('Client Connected: ', addr, '\n')
             threading.Thread(target=onConnection, args=(conn, addr)).start()
-        
-
-
 
 class NodeClient:
 
-    def __init__(self, ip, port, node, backup):
+    def __init__(self, ip, port, node):
 
         self.ip = ip
         self.host = tuple()
         self.port = port
         self.node = node
         self.mySocket = socket.socket()
-        self.backup = backup
-
         self.mySocket.bind((self.ip, self.port))
 
 
@@ -70,11 +65,18 @@ class NodeClient:
 
                 if key == '0':
                     break
-
-                data = pickle.loads(mySocket.recv(512))
-
-                print(data)
-
+                elif key == '1':
+                    data = pickle.loads(mySocket.recv(512))
+                    print (data)
+                elif key == '2':
+                    fileName = input("Enter file name: ")
+                    mySocket.send(fileName.encode())
+                    recvFile(mySocket, fileName)
+                elif key == '3':
+                    filePath = input("Enter file path: ")
+                    fileName = filePath.split("/")[-1]
+                    mySocket.send(fileName.encode())
+                    clientSend(mySocket, filePath)
 
             mySocket.close()
 
@@ -85,7 +87,8 @@ def onConnection(clientSocket, clientAddr):
 
     lv = clientSocket.recv(512)
     userLv = os.getcwd() + "/" + lv.decode()
-    print (userLv)
+    recvFolder = userLv + "/received" 
+    # print (userLv)
 
     while 1:
 
@@ -101,6 +104,71 @@ def onConnection(clientSocket, clientAddr):
         elif mode == '2':
             #access a file from the logical volume
             print ("mode 2")
+            fileName = clientSocket.recv(512).decode()
+            sendFile(clientSocket, fileName, userLv)
         elif mode == '3':
             #put a file in the logical volume
             print ("mode 3")
+            fileName = clientSocket.recv(512).decode()
+            serverRecv(clientSocket, fileName, recvFolder)
+
+def sendFile(socket, fileName, filePath):
+
+    f = open(filePath+"/"+fileName, 'rb')
+    print('Sending ...')
+    l = f.read(1024)
+
+    while (l):
+        print('Sending ...')
+        socket.send(l)
+        l = f.read(1024)
+    
+    f.close()
+    print ('Done Sending')
+
+
+def recvFile(socket, fileName):
+
+    f = open(fileName, 'wb')
+    print('Receiving ...')
+
+    l = socket.recv(1024)
+    while (l):
+        print ('Receiving ... ')
+        f.write(l)
+        if len(l) < 1024:
+            break
+        l = socket.recv(1024)
+
+    f.close()
+    print ('Done Receiving')
+
+def serverRecv(socket, fileName, folder):
+
+    f = open(folder+"/"+fileName, 'wb')
+    print('Receiving ...')
+
+    l = socket.recv(1024)
+    while (l):
+        print ('Receiving ... ')
+        f.write(l)
+        if len(l) < 1024:
+            break
+        l = socket.recv(1024)
+
+    f.close()
+    print ('Done Receiving')
+
+def clientSend(socket, filePath):
+
+    f = open(filePath, 'rb')
+    print('Sending ...')
+    l = f.read(1024)
+
+    while (l):
+        print('Sending ...')
+        socket.send(l)
+        l = f.read(1024)
+    
+    f.close()
+    print ('Done Sending')

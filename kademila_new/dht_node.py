@@ -9,7 +9,7 @@ from node_server import NodeClient
 
 from kademlia.network import Server
 
-numNodes = 0
+# numNodes = 0
 
 # Commandline arguments
 parser = argparse.ArgumentParser()
@@ -40,7 +40,7 @@ loop = asyncio.get_event_loop()
 
 # Create NODE in our DHT
 node = Server()
-numNodes = numNodes + 1
+# numNodes = numNodes + 1
 
 # Set up a "backup" machine for newly added node
 # backup = random.randint(1,numNodes)
@@ -65,7 +65,7 @@ for lv in myLogicalVolumes:
 #print(result)
 
 client_server = NodeServer("0.0.0.0", args.host+1)
-client = NodeClient("0.0.0.0", args.host+2, node, 0)
+client = NodeClient("0.0.0.0", args.host+2, node)
 thread1 = threading.Thread(target=client_server.listen)
 thread2 = threading.Thread(target=client.get)
 print ('Node client running on ', ('0.0.0.0', args.host+2))

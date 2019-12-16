@@ -69,8 +69,9 @@ class NodeClient:
                     data = pickle.loads(mySocket.recv(512))
                     print (data)
                 elif key == '2':
-                    fileName = input("Enter file name: ")
-                    mySocket.send(fileName.encode())
+                    filePath = input("Enter file path: ")
+                    fileName = filePath.split("/")[-1]
+                    mySocket.send(filePath.encode())
                     recvFile(mySocket, fileName)
                 elif key == '3':
                     filePath = input("Enter file path: ")
@@ -99,22 +100,24 @@ def onConnection(clientSocket, clientAddr):
         elif mode == '1':
             #list all the contents of the logical volume
             print ("mode 1")
-            data=pickle.dumps(os.listdir(userLv))
+            data=pickle.dumps(listAllFiles(userLv))
             clientSocket.send(data)
         elif mode == '2':
             #access a file from the logical volume
             print ("mode 2")
-            fileName = clientSocket.recv(512).decode()
-            sendFile(clientSocket, fileName, userLv)
+            filePath = clientSocket.recv(1024).decode()
+            filePath = os.path.join(userLv, filePath)
+            sendFile(clientSocket, filePath)
         elif mode == '3':
             #put a file in the logical volume
             print ("mode 3")
             fileName = clientSocket.recv(512).decode()
             serverRecv(clientSocket, fileName, recvFolder)
 
-def sendFile(socket, fileName, filePath):
+def sendFile(socket, filePath):
 
-    f = open(filePath+"/"+fileName, 'rb')
+    print (filePath)
+    f = open(filePath, 'rb')
     print('Sending ...')
     l = f.read(1024)
 
@@ -129,6 +132,7 @@ def sendFile(socket, fileName, filePath):
 
 def recvFile(socket, fileName):
 
+    print(fileName)
     f = open(fileName, 'wb')
     print('Receiving ...')
 
@@ -172,3 +176,14 @@ def clientSend(socket, filePath):
     
     f.close()
     print ('Done Sending')
+
+def listAllFiles(path):
+
+    files = []
+    # r=root, d=directories, f = files
+    for r, d, f in os.walk(path):
+        for file in f:
+            f = os.path.join(r, file)[43:]
+            files.append(f)
+    
+    return files

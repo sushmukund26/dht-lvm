@@ -1,9 +1,0 @@
-../llvm-project/build/bin/clang -g -c -emit-llvm example.cpp -o example.bc
-
-
-../llvm-project/build/bin/opt -load /home/saim/Desktop/Camel/pass/camel/camel.so --caMel example.bc
-
-
-../llvm-project/build/bin/clang -S -emit-llvm example.cpp -o example.ll
-
-clang -emit-llvm -c -MD --target=msp430 -D__MSP430FR5969__ -nobuiltininc -nostdinc++ -isysroot /none -O1 -g -std=c99 -pedantic -Wall -I /opt/ti/msp430-gcc/lib/gcc/msp430-elf/4.9.1/include -I /opt/ti/msp430-gcc/msp430-elf/include -I /opt/ti/msp430-gcc/include -I ../src  -DBOARD_MSP_TS430  ../../src/main.c -o main.bc
